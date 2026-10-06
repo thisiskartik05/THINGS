@@ -1,0 +1,146 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{array}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Theoretical Handout: Data-Driven Modeling of Galactic Rotation Curves with Artificial Neural Networks}\\
+\large Predecessor Lineage, Methodological Framework, and Paper Evolution}
+\author{\textbf{arXiv:2404.05833v2 Analysis \& Reproduction Plan}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This handout provides a comprehensive theoretical overview of the paper \textit{``Data-driven modeling of rotation curves with artificial neural networks''} (arXiv:2404.05833v2) by Gabriela Garcia-Arroyo, Isidro G\'omez-Vargas, and J. Alberto V\'azquez. It synthesizes the scientific context of galactic rotation curves, traces the methodological lineage from predecessor cosmological machine learning papers, details the evolution from arXiv v1 to v2, presents the mathematical formulation of Monte Carlo Dropout and Genetic Algorithm optimization, and outlines the benchmark classifications of the 17 THINGS galaxies.
+\end{abstract}
+
+\section{Scientific Context \& Problem Formulation}
+
+Galactic rotation curves (RCs) measure the circular velocity $V(r)$ of stars and gas as a function of radial distance $r$ from the galactic center. In traditional astrophysics, rotation curves are modeled parametrically as the quadrature sum of baryonic and dark matter (DM) contributions:
+\begin{equation}
+V^2(r) = V_{\text{gas}}^2(r) + \Upsilon_\star V_\star^2(r) + V_{\text{halo}}^2(r)
+\end{equation}
+where:
+\begin{itemize}
+    \item $V_{\text{gas}}(r)$ is derived from $21\,\text{cm}$ neutral hydrogen (HI) surface density profiles.
+    \item $V_\star(r)$ is derived from $3.6\,\mu\text{m}$ Spitzer surface brightness profiles $I(r)$.
+    \item $\Upsilon_\star$ is the mass-to-light ratio converting luminosity to gravitational mass.
+    \item $V_{\text{halo}}(r)$ is modeled assuming a dark matter density profile, typically Navarro-Frenk-White (NFW):
+    \begin{equation}
+    \rho_{\text{NFW}}(r) = \frac{\rho_i}{\left(\frac{r}{R_s}\right) \left(1 + \frac{r}{R_s}\right)^2}
+    \end{equation}
+\end{itemize}
+
+\subsection{Limitations of Parametric Models}
+Parametric fits impose strong physical assumptions:
+\begin{enumerate}
+    \item Smooth, symmetric matter distributions.
+    \item Fixed or global mass-to-light ratios ($\Upsilon_\star^{\text{fix}}$ vs. $\Upsilon_\star^{\text{free}}$).
+    \item Inability to capture localized dynamics, non-circular motions, or irregular baryonic structures.
+\end{enumerate}
+
+\section{Methodological Lineage \& Intellectual Heritage}
+
+The artificial neural network (ANN) framework in arXiv:2404.05833v2 is adapted directly from a sequence of cosmological machine learning papers by the same authors:
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=Methodological Lineage]
+\textbf{1. G\'omez-Vargas et al. (PRD 2023, 107, 043509):}\\
+Introduced the \texttt{nnogada} library combining Genetic Algorithms (DEAP framework) and Monte Carlo Dropout for model-independent cosmological data reconstructions ($H(z)$, SNe Ia).\\
+
+\textbf{2. Mitra, G\'omez-Vargas \& Zarikas (Phys. Dark Univ. 2024, 101706):}\\
+Applied ANN + MC-DO + GA to joint cosmological datasets, comparing performance against Gaussian Processes (GP).\\
+
+\textbf{3. Garcia-Arroyo, G\'omez-Vargas \& V\'azquez (arXiv:2404.05833v2 2026):}\\
+Transferred the validated cosmological pipeline to \textbf{galactic dynamics}, replacing redshift $z$ with radius $r$, and predicting velocity $V(r)$ and uncertainty $\sigma_V(r)$.
+\end{tcolorbox}
+
+\section{Evolution: arXiv v1 vs arXiv v2}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{p{2.8cm} p{5.5cm} p{5.5cm}}
+\toprule
+\textbf{Feature} & \textbf{arXiv v1 (April 2024)} & \textbf{arXiv v2 (Feb 2026)} \\
+\midrule
+\textbf{Title} & \textit{Reconstructing rotation curves with artificial neural networks} & \textit{Data-driven modeling of rotation curves with artificial neural networks} \\
+\midrule
+\textbf{Network Output} & Described primarily as single velocity prediction & Multi-output coupled prediction: input $r \to [V(r), \sigma_V(r)]$ \\
+\midrule
+\textbf{LOESS Comparison} & Brief citation to LOESS+SIMEX & Expanded discussion highlighting global ANN mapping vs. local piecewise polynomials \\
+\midrule
+\textbf{Galaxy Grouping} & Preliminary MSE reporting & Detailed physical categorization into Groups A, B, and C \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of key revisions between v1 and v2.}
+\end{table}
+
+\section{Machine Learning Framework}
+
+\subsection{Multi-Output Neural Network Topology}
+For each galaxy, a dedicated feed-forward network maps radial distance $r \to [V(r), \sigma_V(r)]$ with $\text{ReLU}$ activations in hidden layers and linear outputs.
+
+\subsection{Monte Carlo Dropout (MC-DO)}
+Dropout with rate $p=0.3$ remains active during inference. Performing $N_{\text{MC}}$ stochastic passes yields:
+\begin{align}
+\bar{V}(r) &= \frac{1}{N_{\text{MC}}} \sum_{t=1}^{N_{\text{MC}}} \hat{V}^{(t)}(r) \\
+\sigma_{\text{MC}}^2(r) &= \frac{1}{N_{\text{MC}}} \sum_{t=1}^{N_{\text{MC}}} \left( \hat{V}^{(t)}(r) - \bar{V}(r) \right)^2 \\
+\sigma_{\text{total}}(r) &= \sqrt{\sigma_{\text{MC}}^2(r) + \sigma_{\text{stat}}^2(r)}
+\end{align}
+
+\subsection{Genetic Algorithm Search Space}
+Using \texttt{nnogada}, the GA optimizes:
+\begin{itemize}
+    \item Number of hidden layers $\in [3, 4]$
+    \item Neurons per hidden layer $\in [50, 100, 150, 200]$
+    \item Batch size $\in [4, 8, 16, 32]$
+\end{itemize}
+Fixed training parameters: Adam optimizer ($\text{lr}=5\times 10^{-4}$), 1000 epochs, MSE loss.
+
+\section{Benchmark Galaxy Architectures (Table 1 Extraction)}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{l c c c}
+\toprule
+\textbf{Galaxy} & \textbf{\# Hidden Layers} & \textbf{\# Neurons} & \textbf{Batch Size} \\
+\midrule
+NGC4736 & 4 & 200 & 8 \\
+NGC2841 & 3 & 150 & 8 \\
+NGC925 & 4 & 200 & 4 \\
+NGC2903 & 4 & 150 & 8 \\
+\textbf{DDO154} (Target) & \textbf{4} & \textbf{200} & \textbf{4} \\
+NGC6946 & 4 & 200 & 8 \\
+NGC7793 & 4 & 150 & 4 \\
+NGC2976 & 4 & 200 & 4 \\
+NGC7331 & 3 & 200 & 4 \\
+NGC3198 & 3 & 150 & 4 \\
+NGC3621 & 4 & 200 & 4 \\
+NGC3521 & 3 & 200 & 4 \\
+NGC5055 & 4 & 100 & 4 \\
+NGC2366 & 4 & 200 & 8 \\
+NGC2403 & 3 & 150 & 8 \\
+NGC3031 & 3 & 200 & 4 \\
+IC2574 & 3 & 200 & 4 \\
+\bottomrule
+\end{tabular}
+\caption{Best hyperparameter combinations extracted from Table 1 of arXiv:2404.05833v2.}
+\end{table}
+
+\end{document}

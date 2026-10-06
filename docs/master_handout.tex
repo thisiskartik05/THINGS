@@ -1,0 +1,79 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{Master Theoretical \& Computational Handout}\\
+\large Data-Driven Modeling of Galactic Rotation Curves with Artificial Neural Networks}
+\author{\textbf{arXiv:2404.05833v2 Full Reproduction \& Independent Validation}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This comprehensive master handout details the physical theory, mathematical intuition, deep learning architecture, and computational implementation for reproducing arXiv:2404.05833v2. It covers galactic kinematic decomposition, Monte Carlo Dropout uncertainty estimation, Genetic Algorithm hyperparameter search, and physical classification of 17 THINGS galaxies into Groups A, B, and C.
+\end{abstract}
+
+\section{Astrophysical Foundations}
+
+\subsection{Rotational Equilibrium}
+In spiral galaxies, circular orbits in the equatorial plane obey:
+\begin{equation}
+\frac{V^2(r)}{r} = -\frac{\partial \Phi(r)}{\partial r} = \frac{G M(<r)}{r^2}
+\end{equation}
+
+\subsection{Mass Components}
+The total observed velocity is decomposed as:
+\begin{equation}
+V_{\text{total}}^2(r) = V_{\text{gas}}^2(r) + \Upsilon_\star V_\star^2(r) + V_{\text{halo}}^2(r)
+\end{equation}
+where $V_{\text{gas}}$ is from 21-cm HI data ($1.4\times$ helium/metal correction), $V_\star$ is from $3.6\,\mu\text{m}$ Spitzer surface brightness, and $V_{\text{halo}}$ is modeled via the Navarro-Frenk-White (NFW) profile:
+\begin{equation}
+\rho_{\text{NFW}}(r) = \frac{\rho_i}{\left(\frac{r}{R_s}\right) \left(1 + \frac{r}{R_s}\right)^2}
+\end{equation}
+
+\section{Machine Learning \& Mathematical Formulation}
+
+\subsection{Multi-Output Neural Network}
+An ANN maps radial distance $r \to [V(r), \sigma_V(r)]$ without physical priors.
+
+\subsection{Monte Carlo Dropout (MC-DO)}
+Dropout ($p=0.3$) is retained active during inference across $N_{\text{MC}}=100$ forward passes:
+\begin{align}
+\bar{V}(r) &= \frac{1}{N_{\text{MC}}} \sum_{t=1}^{N_{\text{MC}}} \hat{V}^{(t)}(r) \\
+\sigma_{\text{MC}}^2(r) &= \frac{1}{N_{\text{MC}}} \sum_{t=1}^{N_{\text{MC}}} \left( \hat{V}^{(t)}(r) - \bar{V}(r) \right)^2 \\
+\sigma_{\text{total}}(r) &= \sqrt{\sigma_{\text{MC}}^2(r) + \bar{\sigma}_{\text{stat}}^2(r)}
+\end{align}
+
+\section{Group Classification \& Results}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{c l l p{5cm}}
+\toprule
+\textbf{Group} & \textbf{Galaxies} & \textbf{Criterion} & \textbf{Physical Insight} \\
+\midrule
+\textbf{A} & DDO154, NGC2903, NGC3621, NGC2403 & NFW fits best & Smooth, regular DM-dominated dynamics. \\
+\textbf{B} & NGC3031, NGC2841, NGC3198, NGC5055 & ANN between fix and free & Two-disk/bulge complexity. \\
+\textbf{C} & NGC4736, NGC925, NGC6946, NGC7793, NGC2976, NGC7331, NGC3521, NGC2366, IC2574 & ANN best overall & Irregular rotation curves, non-circular motions, baryonic substructure. \\
+\bottomrule
+\end{tabular}
+\caption{Classification of 17 THINGS galaxies from arXiv:2404.05833v2.}
+\end{table}
+
+\end{document}

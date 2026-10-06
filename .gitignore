@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Results & temporary outputs
+results_*.png
+*.tmp
