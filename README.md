@@ -69,14 +69,6 @@ jupyter notebook reproduce_rotation_curves.ipynb
 
 ---
 
-## 📖 Theoretical Handouts & Documentation
-
-For a deep dive into the mathematical physics, neural network topology, and kinematic equations:
-- Read the **[Master Handout (Markdown)](docs/master_handout.md)**
-- Download the compiled **[Master Handout (PDF)](docs/master_handout.pdf)**
-
----
-
 ## 📜 Citation
 
 If you use this codebase or theoretical handouts, please cite the original authors' paper:
